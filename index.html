@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Codes Postaux de la Polynésie Française</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 75%;
+        }
+        td, th {
+            border: 1px solid black;
+            text-align: center;
+            width: 25%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <div>
+        <label for="input">Recherche</label>
+        <input name="input" id="input" v-model="input"/>
+    </div>
+
+    <div v-show="liste.length == 0">Chargement des données en cours...</div>
+
+    <table>
+        <tr>
+            <th>Archipel</th>
+            <th>Ile</th>
+            <th>Commune</th>
+            <th>Code</th>
+        </tr>
+        <tr v-for="item in liste | filterBy input in 'archipel' 'code' 'commune' 'ile'">
+            <td>{{ item.archipel }}</td>
+            <td>{{ item.ile }}</td>
+            <td>{{ item.commune }}</td>
+            <td>{{ item.code }}</td>
+        </tr>
+    </table>
+
+</div>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.14/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/0.9.3/vue-resource.min.js"></script>
+
+<script>
+
+    new Vue({
+
+        http: {
+            root: 'https://codespostaux.herokuapp.com/v1',
+            headers: {
+                Accept: 'application/json'
+            }
+        },
+
+        el: '#app',
+
+        data: {
+            message: 'aaa',
+            input: '',
+            liste: []
+        },
+
+        methods: {
+            fetchAll: function () {
+                var self = this
+                this.$http.get('codes').then((response) => {
+                    self.$set('liste', response.json().codes)
+                })
+            }
+        },
+
+        created: function () {
+            this.fetchAll()
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
